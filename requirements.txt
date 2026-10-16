@@ -1,13 +1,44 @@
-# Core Data & Evaluation
-pandas>=2.0.0
-scipy>=1.10.0
-numpy>=1.24.0
-matplotlib>=3.7.0
-tqdm>=4.65.0
+# ============================================================
+# ExploitGen - NT521 | Môi trường LOCAL (Windows, Python 3.9/3.10)
+# Vai trò local: preprocess dữ liệu, tính metrics, chạy demo/inference.
+# Huấn luyện GPU thực hiện trên Cloud (Kaggle/Colab) - xem Mục V của plan.
+# ============================================================
 
-# Web Demo Dashboard
-streamlit>=1.30.0
+# --- Core Data & Evaluation ---
+# numpy < 2.0: tránh phá vỡ torch < 2.2 và code dùng `from numpy import *`
+numpy<2.0
+pandas>=1.4,<2.2
+scipy>=1.8
+matplotlib>=3.5
+tqdm>=4.64
 
-# NLP & Deep Learning
-transformers>=4.30.0
-torch
+# --- NLP & Deep Learning ---
+# transformers == 4.21.0: BẮT BUỘC - model.py import `AdamW` từ transformers,
+# API này bị gỡ ở các bản >= 4.40. Đây là bản khớp với code gốc ExploitGen.
+torch>=1.12,<2.2
+transformers==4.21.0
+# huggingface_hub phải pin: bản >=0.11 làm vỡ bộ tải của transformers 4.21 (URL hỏng),
+# bản <=0.10 lỗi tên file blob trên Windows. 0.25.2 tải sạch + transformers import OK.
+# Khuyến nghị: tải sẵn model về thư mục local rồi from_pretrained(local_dir) để né hẳn.
+huggingface_hub==0.25.2
+spacy>=3.4,<3.8
+nltk>=3.7
+
+# --- Template Canonicalization / Parsing (utils/OurCanonical.py, python.py) ---
+code-tokenize>=0.2.0
+astor>=0.8
+words2num>=0.2
+
+# --- Evaluation metrics (evaluate.py dùng rouge_w_sentence_level) ---
+# PHẢI là easy-rouge (không phải gói 'rouge' trên PyPI) mới có rouge_w_sentence_level
+easy-rouge>=0.2.2
+
+# --- Web Demo Dashboard (Tiêu chí 1-4, Mục VIII) ---
+streamlit>=1.28
+
+# ============================================================
+# Ghi chú bổ sung cho các giai đoạn sau (cài khi cần, không bắt buộc local):
+#   - BLEU-4 / CodeBLEU: sacrebleu, tree-sitter   (Rủi ro B)
+#   - LLM benchmark qua API:                       openai>=1.10
+#   - Sandbox Validator:                           docker>=6.1, capstone>=5.0 (chạy trên WSL2)
+# ============================================================
